@@ -17,19 +17,24 @@ op.add_experimental_option('excludeSwitches', ['enable-logging'])
 driver = webdriver.Chrome(service=ser, options=op)
 driver.get(website)
 
-products = driver.find_elements(By.CLASS_NAME, 'category-list-partnumber')
+products = driver.find_elements(By.CLASS_NAME, 'category-list-title')
+
+
+#for product in products:
+#    name = product.find_element(By.CLASS_NAME, 'category-list-name')
+#    print(name.text)
 
 nail_polishes = []
 
 for product in products:
-    code = product.text
+    code = product.find_element(By.CLASS_NAME, 'category-list-partnumber').text
     if not re.match(r'ZP\d+', code):
         continue
     else:
-        #name = product.find_elements(By.CLASS_NAME, 'category-list-name')
+        name = product.find_element(By.CLASS_NAME, 'category-list-name').text
         polish = dict()
         polish['code'] = code
-        #polish['name'] = name.text
+        polish['name'] = name
         nail_polishes.append(polish)
         
 print(nail_polishes)
