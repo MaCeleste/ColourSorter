@@ -3,9 +3,11 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import re
+import os
+import wget
+import time
 
 website = 'https://www.zoya.com/content/category/Zoya_Nail_Polish.html'
-#path = r'C:\Users\Francisco\Downloads\chromedriver.exe'
 
 ser = Service(r"C:\Users\Francisco\Downloads\chromedriver.exe")
 op = Options()
@@ -17,12 +19,10 @@ op.add_experimental_option('excludeSwitches', ['enable-logging'])
 driver = webdriver.Chrome(service=ser, options=op)
 driver.get(website)
 
-products = driver.find_elements(By.CLASS_NAME, 'category-list-title')
+time.sleep(10)
 
-
-#for product in products:
-#    name = product.find_element(By.CLASS_NAME, 'category-list-name')
-#    print(name.text)
+# CSS selector (https://stackoverflow.com/questions/58422998/selenium-python-find-elements-by-class-name-returns-nothing)
+products = driver.find_elements(By.CLASS_NAME, 'itemContainer.item')
 
 nail_polishes = []
 
@@ -32,9 +32,26 @@ for product in products:
         continue
     else:
         name = product.find_element(By.CLASS_NAME, 'category-list-name').text
+        link = product.find_element(By.TAG_NAME, 'a').get_attribute('href')
+        image = product.find_element(By.TAG_NAME, 'img').get_attribute('src')
         polish = dict()
         polish['code'] = code
         polish['name'] = name
+        polish['link'] = link
+        polish['image'] = image
         nail_polishes.append(polish)
-        
+
+# Create images folder
+path = os.getcwd()
+path = os.path.join(path, 'images')
+try:
+    os.mkdir(path)
+except FileExistsError:
+    pass
+
+#Download images
+for polish in nail_polishes:
+    save_as = os.path.join(path, polish['name'] + '.jpg')
+    wget.download(polish['image'], save_as)
+
 print(nail_polishes)
