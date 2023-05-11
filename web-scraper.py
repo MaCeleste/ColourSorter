@@ -6,10 +6,14 @@ import re
 import os
 import wget
 import time
+from dotenv import load_dotenv
 
 website = 'https://www.zoya.com/content/category/Zoya_Nail_Polish.html'
 
-ser = Service(r"C:\Users\Francisco\Downloads\chromedriver.exe")
+load_dotenv()
+CHROMEDRIVER_PATH = os.getenv('CHROMEDRIVER_PATH')
+
+ser = Service()
 op = Options()
 # Keep Chrome open after script runs
 op.add_experimental_option("detach", True)
